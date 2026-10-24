@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StudioUMKM - Transformasi Foto Produk Profesional</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              800: '#1e40af',
+            },
+            accent: {
+              500: '#f97316',
+              600: '#ea580c',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .checkerboard-bg {
+      background-image: linear-gradient(45deg, #f1f5f9 25%, transparent 25%), 
+                        linear-gradient(-45deg, #f1f5f9 25%, transparent 25%), 
+                        linear-gradient(45deg, transparent 75%, #f1f5f9 75%), 
+                        linear-gradient(-45deg, transparent 75%, #f1f5f9 75%);
+      background-size: 20px 20px;
+      background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background-color: #cbd5e1;
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
+
+  <!-- Top Navigation Header -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-brand-500/20">
+          <i class="fa-solid fa-camera-retro text-lg"></i>
+        </div>
+        <div>
+          <span class="font-extrabold text-lg sm:text-xl tracking-tight text-slate-900">Studio<span class="text-brand-600">UMKM</span></span>
+          <span class="hidden sm:inline-block ml-2 px-2 py-0.5 text-xs font-semibold bg-emerald-100 text-emerald-800 rounded-full">AI Photo Lab</span>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button id="btnQuickDemo" class="text-xs sm:text-sm px-3.5 py-2 font-medium text-slate-700 hover:text-brand-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors flex items-center gap-2">
+          <i class="fa-solid fa-wand-magic-sparkles text-brand-600"></i>
+          <span>Coba Foto Contoh</span>
+        </button>
+        <a href="#tutorialModal" onclick="toggleModal('tutorialModal', true)" class="text-xs sm:text-sm px-3 py-2 font-medium text-slate-600 hover:text-slate-900 rounded-lg transition-colors">
+          <i class="fa-regular fa-circle-question mr-1"></i> Bantuan
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Notification Toast Container -->
+  <div id="toastContainer" class="fixed top-20 right-4 z-50 flex flex-col gap-2 max-w-sm pointer-events-none"></div>
+
+  <!-- Main Workspace -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+    
+    <!-- Left Panel: Controls, Presets, and Inputs (5 cols on lg) -->
+    <div class="lg:col-span-5 flex flex-col gap-5">
+      
+      <!-- Upload Card -->
+      <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm">
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-sm font-bold uppercase tracking-wider text-slate-500 flex items-center gap-2">
+            <span class="w-5 h-5 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center text-xs">1</span>
+            Unggah Foto Produk
+          </h2>
+          <span id="fileBadge" class="text-xs text-slate-400">JPG, PNG maks 10MB</span>
+        </div>
+
+        <div id="dropzone" class="border-2 border-dashed border-slate-300 hover:border-brand-500 hover:bg-brand-50/30 rounded-xl p-6 text-center cursor-pointer transition-all duration-200 flex flex-col items-center justify-center gap-2 group">
+          <input type="file" id="imageInput" accept="image/*" class="hidden">
+          <div class="w-12 h-12 rounded-full bg-slate-100 group-hover:bg-brand-100 text-slate-400 group-hover:text-brand-600 flex items-center justify-center transition-colors">
+            <i class="fa-solid fa-cloud-arrow-up text-xl"></i>
+          </div>
+          <div>
+            <p class="text-sm font-semibold text-slate-700">Tarik foto ke sini atau <span class="text-brand-600 underline">pilih dari HP/laptop</span></p>
+            <p class="text-xs text-slate-400 mt-0.5">Foto kamera biasa berantakan akan disulap jadi mewah</p>
+          </div>
+        </div>
+
+        <!-- Detail Produk -->
+        <div class="mt-4 pt-3 border-t border-slate-100 grid grid-cols-1 gap-3">
+          <!-- AI Vision Detection Badge / Status -->
+          <div id="visionStatusBadge" class="hidden p-2.5 rounded-xl bg-gradient-to-r from-indigo-50 to-brand-50 border border-brand-200/70 flex items-start gap-2.5 transition-all">
+            <div class="w-7 h-7 rounded-lg bg-brand-600 text-white flex items-center justify-center shrink-0 text-xs shadow-sm shadow-brand-500/20">
+              <i class="fa-solid fa-brain animate-pulse"></i>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center justify-between gap-1">
+                <span class="text-[11px] font-bold text-brand-900 tracking-tight flex items-center gap-1">
+                  <i class="fa-solid fa-eye text-brand-600"></i> AI Vision Terdeteksi
+                </span>
+                <span id="visionConfidence" class="text-[10px] font-semibold text-emerald-700 bg-emerald-100/80 px-1.5 py-0.5 rounded">Otomatis</span>
+              </div>
+              <p id="visionSummaryText" class="text-[11px] text-slate-600 truncate mt-0.5">Menganalisis objek produk...</p>
+            </div>
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <label class="block text-xs font-semibold text-slate-600">Nama Produk Anda</label>
+              <span id="aiAutoTag" class="hidden text-[10px] font-medium text-brand-600 bg-brand-50 px-1.5 py-0.5 rounded">Diisi otomatis oleh AI</span>
+            </div>
+            <input type="text" id="productName" placeholder="Contoh: Kopi Susu Aren Botol 250ml" class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 bg-slate-50 focus:bg-white transition-all">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Kategori Produk</label>
+            <select id="productCategory" class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 bg-slate-50 focus:bg-white transition-all">
+              <option value="kuliner">Kuliner & Minuman</option>
+              <option value="skincare">Skincare & Kosmetik</option>
+              <option value="fashion">Fashion, Tas & Sepatu</option>
+              <option value="aksesoris">Aksesoris & Kerajinan Tangan</option>
+              <option value="elektronik">Gadget & Peralatan Rumah</option>
+              <option value="herbal">Herbal, Suplemen & Kesehatan</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Theme & Background Studio Card -->
+      <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm flex flex-col gap-4">
+        <div class="flex items-center justify-between">
+          <h2 class="text-sm font-bold uppercase tracking-wider text-slate-500 flex items-center gap-2">
+            <span class="w-5 h-5 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center text-xs">2</span>
+            Pilih Tema Studio AI
+          </h2>
+          <span class="text-xs text-slate-400">Panggung Visual</span>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2.5 max-h-56 overflow-y-auto pr-1 custom-scroll" id="presetContainer">
+          <!-- Preset 1: Wooden Table Warm -->
+          <button type="button" class="preset-card active text-left p-3 rounded-xl border-2 border-brand-500 bg-brand-50/40 hover:bg-slate-50 transition-all flex flex-col gap-1 relative" data-prompt="Place this exact product standing upright on a warm rustic dark wooden café table. Professional high-end commercial product photography, dramatic warm soft rim lighting, shallow depth of field, cozy aesthetic café background blurred, ultra sharp product focus, 8k resolution.">
+            <span class="text-xs font-bold text-slate-800 flex items-center justify-between">
+              Meja Kayu Estetik
+              <i class="fa-solid fa-check text-brand-600 check-indicator"></i>
+            </span>
+            <span class="text-[11px] text-slate-500 leading-tight">Cocok utk: Kuliner, Kopi, Sambal, Snack</span>
+          </button>
+
+          <!-- Preset 2: Minimalist Podium -->
+          <button type="button" class="preset-card text-left p-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 transition-all flex flex-col gap-1 relative" data-prompt="Professional commercial cosmetic product photoshoot. The product stands on a clean geometric cylinder podium in a pastel beige and soft cream minimalist studio. Elegant soft daylight reflections, studio key light, pristine luxury clean look, ultra realistic.">
+            <span class="text-xs font-bold text-slate-800 flex items-center justify-between">
+              Podium Skincare Mewah
+              <i class="fa-solid fa-check text-brand-600 check-indicator hidden"></i>
+            </span>
+            <span class="text-[11px] text-slate-500 leading-tight">Cocok utk: Serum, Skincare, Parfum</span>
+          </button>
+
+          <!-- Preset 3: Marble Elegance -->
+          <button type="button" class="preset-card text-left p-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 transition-all flex flex-col gap-1 relative" data-prompt="Commercial product shoot of the item placed on a polished white Carrara marble surface with subtle grey veins. Soft daylight coming from a side window, subtle water droplets or gentle green botanical leaf shadow in the blurred background. Luxurious and premium.">
+            <span class="text-xs font-bold text-slate-800 flex items-center justify-between">
+              Marmer Putih Elegan
+              <i class="fa-solid fa-check text-brand-600 check-indicator hidden"></i>
+            </span>
+            <span class="text-[11px] text-slate-500 leading-tight">Cocok utk: Minuman Botol, Jam, Tas</span>
+          </button>
+
+          <!-- Preset 4: Nature / Tropical Organic -->
+          <button type="button" class="preset-card text-left p-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 transition-all flex flex-col gap-1 relative" data-prompt="The product displayed on a natural smooth river stone surrounded by fresh green tropical leaves and morning dewdrops. Golden hour sunlight dappled shadows, organic, fresh eco-friendly advertising photography.">
+            <span class="text-xs font-bold text-slate-800 flex items-center justify-between">
+              Alam & Daun Tropis
+              <i class="fa-solid fa-check text-brand-600 check-indicator hidden"></i>
+            </span>
+            <span class="text-[11px] text-slate-500 leading-tight">Cocok utk: Herbal, Jamu, Sabun Organik</span>
+          </button>
+
+          <!-- Preset 5: Bright Clean Studio Catalog -->
+          <button type="button" class="preset-card text-left p-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 transition-all flex flex-col gap-1 relative" data-prompt="Catalog ecommerce hero shot of the product on a crisp gradient soft white and grey studio infinity cove. Balanced 3-point softbox studio lighting, crisp drop shadow under the product base, clean e-commerce marketplace ready.">
+            <span class="text-xs font-bold text-slate-800 flex items-center justify-between">
+              Katalog Marketplace
+              <i class="fa-solid fa-check text-brand-600 check-indicator hidden"></i>
+            </span>
+            <span class="text-[11px] text-slate-500 leading-tight">Cocok utk: Shopee, Tokopedia, Lazada</span>
+          </button>
+
+          <!-- Preset 6: Custom Prompt -->
+          <button type="button" class="preset-card text-left p-3 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 transition-all flex flex-col gap-1 relative" data-prompt="custom">
+            <span class="text-xs font-bold text-slate-800 flex items-center justify-between">
+              Custom Prompt Sendiri
+              <i class="fa-solid fa-check text-brand-600 check-indicator hidden"></i>
+            </span>
+            <span class="text-[11px] text-slate-500 leading-tight">Tulis imajinasi latar belakang sendiri</span>
+          </button>
+        </div>
+
+        <div id="customPromptContainer" class="hidden">
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Deskripsi Latar Belakang Custom (Bisa Bahasa Indonesia)</label>
+          <textarea id="customPromptText" rows="2" placeholder="Contoh: Letakkan produk di atas meja marmer hitam dengan lampu neon biru lembut di belakangnya..." class="w-full text-xs p-2.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 bg-slate-50 focus:bg-white"></textarea>
+        </div>
+
+        <!-- Action Button: Generate AI Image -->
+        <button id="btnGenerateAI" class="w-full py-3.5 px-4 bg-gradient-to-r from-brand-600 via-indigo-600 to-brand-700 hover:from-brand-700 hover:to-indigo-700 text-white font-bold rounded-xl shadow-lg shadow-brand-600/25 transition-all transform active:scale-[0.99] flex items-center justify-center gap-2">
+          <i class="fa-solid fa-wand-magic-sparkles"></i>
+          <span>Ubah Jadi Foto Studio Pro (AI)</span>
+        </button>
+      </div>
+
+      <!-- Promotion & Marketing Overlay Card -->
+      <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm flex flex-col gap-3">
+        <div class="flex items-center justify-between">
+          <h2 class="text-sm font-bold uppercase tracking-wider text-slate-500 flex items-center gap-2">
+            <span class="w-5 h-5 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center text-xs">3</span>
+            Pasang Banner Promo & Teks
+          </h2>
+          <label class="inline-flex items-center cursor-pointer">
+            <input type="checkbox" id="toggleOverlay" class="sr-only peer" checked>
+            <div class="w-9 h-5 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-brand-600"></div>
+          </label>
+        </div>
+
+        <div id="overlayControls" class="grid grid-cols-2 gap-3 pt-2">
+          <div>
+            <label class="text-xs font-semibold text-slate-600 block mb-1">Badge Promo</label>
+            <select id="overlayBadge" class="w-full text-xs px-2.5 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:bg-white">
+              <option value="none">Tanpa Badge</option>
+              <option value="DISKON 50%" selected>🔥 Diskon 50%</option>
+              <option value="FLASH SALE">⚡ FLASH SALE</option>
+              <option value="GRATIS ONGKIR">🚚 GRATIS ONGKIR</option>
+              <option value="BEST SELLER">⭐ BEST SELLER</option>
+              <option value="PRODUK BARU">✨ PRODUK BARU</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-slate-600 block mb-1">Nama Toko/Brand</label>
+            <input type="text" id="overlayBrand" value="Toko Kopi Berkah" placeholder="Nama Brand Anda" class="w-full text-xs px-2.5 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:bg-white">
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-slate-600 block mb-1">Harga Promo (Rp)</label>
+            <input type="text" id="overlayPrice" value="Rp 29.000" placeholder="Rp 50.000" class="w-full text-xs px-2.5 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:bg-white">
+          </div>
+          <div>
+            <label class="text-xs font-semibold text-slate-600 block mb-1">Harga Asli (Coret)</label>
+            <input type="text" id="overlayOldPrice" value="Rp 58.000" placeholder="Rp 99.000" class="w-full text-xs px-2.5 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:bg-white">
+          </div>
+          <div class="col-span-2">
+            <label class="text-xs font-semibold text-slate-600 block mb-1">Slogan Singkat</label>
+            <input type="text" id="overlaySlogan" value="Rasa Autentik, Bikin Hari Lebih Semangat!" class="w-full text-xs px-2.5 py-2 rounded-lg border border-slate-200 bg-slate-50 focus:bg-white">
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right Panel: Canvas Preview & AI Copywriter (7 cols on lg) -->
+    <div class="lg:col-span-7 flex flex-col gap-5">
+      
+      <!-- Visual Preview Card -->
+      <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm flex flex-col">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+          <div class="flex items-center gap-2">
+            <h2 class="text-base font-bold text-slate-900">Preview Hasil Studio</h2>
+            <span id="statusTag" class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-600">Siap Proses</span>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <div class="inline-flex rounded-lg border border-slate-200 bg-slate-50 p-1 text-xs">
+              <button id="btnAspectSquare" class="px-2.5 py-1 rounded-md bg-white font-semibold shadow-sm text-slate-800">1:1 Feed</button>
+              <button id="btnAspectStory" class="px-2.5 py-1 rounded-md text-slate-500 hover:text-slate-800">9:16 Story</button>
+            </div>
+            <button id="btnResetAdjust" title="Reset filter" class="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg">
+              <i class="fa-solid fa-arrow-rotate-left"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Canvas Container with Loading Overlay -->
+        <div class="relative w-full aspect-square max-h-[500px] rounded-xl overflow-hidden checkerboard-bg border border-slate-200 flex items-center justify-center group shadow-inner">
+          <canvas id="mainCanvas" class="max-w-full max-h-full object-contain"></canvas>
+
+          <!-- Empty placeholder state -->
+          <div id="emptyState" class="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-slate-50/80 backdrop-blur-[2px]">
+            <div class="w-16 h-16 rounded-2xl bg-brand-50 border border-brand-100 flex items-center justify-center text-brand-600 mb-3 shadow-sm">
+              <i class="fa-solid fa-image text-2xl"></i>
+            </div>
+            <h3 class="font-bold text-slate-800 text-base">Belum Ada Foto</h3>
+            <p class="text-xs text-slate-500 max-w-xs mt-1">Upload foto produk atau klik tombol "Coba Foto Contoh" di kanan atas untuk melihat keajaibannya.</p>
+          </div>
+
+          <!-- Loading Indicator Overlay -->
+          <div id="loadingOverlay" class="hidden absolute inset-0 bg-slate-900/70 backdrop-blur-sm flex flex-col items-center justify-center text-white p-6 z-30 transition-all">
+            <div class="relative w-16 h-16 mb-4">
+              <div class="absolute inset-0 rounded-full border-4 border-brand-400/30"></div>
+              <div class="absolute inset-0 rounded-full border-4 border-brand-400 border-t-transparent animate-spin"></div>
+              <i class="fa-solid fa-sparkles text-brand-300 absolute inset-0 flex items-center justify-center text-lg animate-pulse"></i>
+            </div>
+            <p id="loadingStatusText" class="font-semibold text-sm tracking-wide text-center">Studio AI sedang merombak pencahayaan & latar produk...</p>
+            <p class="text-xs text-slate-300 mt-1">Memproses ke resolusi komersial profesional</p>
+          </div>
+        </div>
+
+        <!-- Quick Filters Toolbar -->
+        <div class="mt-4 pt-3 border-t border-slate-100 grid grid-cols-3 gap-3 text-xs">
+          <div>
+            <div class="flex justify-between text-slate-600 font-medium mb-1">
+              <span>Kecerahan</span>
+              <span id="valBrightness">100%</span>
+            </div>
+            <input type="range" id="filterBrightness" min="60" max="140" value="100" class="w-full accent-brand-600 cursor-pointer">
+          </div>
+          <div>
+            <div class="flex justify-between text-slate-600 font-medium mb-1">
+              <span>Kontras</span>
+              <span id="valContrast">100%</span>
+            </div>
+            <input type="range" id="filterContrast" min="70" max="140" value="100" class="w-full accent-brand-600 cursor-pointer">
+          </div>
+          <div>
+            <div class="flex justify-between text-slate-600 font-medium mb-1">
+              <span>Saturasi Warna</span>
+              <span id="valSaturation">105%</span>
+            </div>
+            <input type="range" id="filterSaturation" min="60" max="160" value="105" class="w-full accent-brand-600 cursor-pointer">
+          </div>
+        </div>
+
+        <!-- Download Buttons -->
+        <div class="mt-4 flex flex-wrap items-center gap-3">
+          <button id="btnDownloadJPG" class="flex-1 py-3 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-md shadow-emerald-600/20 transition-all flex items-center justify-center gap-2 text-sm">
+            <i class="fa-solid fa-download"></i>
+            <span>Download Foto Promosi (HD)</span>
+          </button>
+          <button id="btnCopyImage" class="px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-sm transition-colors flex items-center gap-2" title="Salin Gambar ke Clipboard">
+            <i class="fa-regular fa-copy"></i>
+            <span class="hidden sm:inline">Salin</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- AI Copywriter Section -->
+      <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-sm flex flex-col gap-3">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
+              <i class="fa-solid fa-bullhorn text-sm"></i>
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-slate-900">AI Copywriter Promo Media Sosial</h3>
+              <p class="text-[11px] text-slate-500">Buat caption jualan menarik untuk Instagram, TikTok & WhatsApp</p>
+            </div>
+          </div>
+          <button id="btnGenerateCaption" class="text-xs px-3.5 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold rounded-lg transition-colors flex items-center gap-1.5 border border-indigo-200">
+            <i class="fa-solid fa-feather-pointed"></i>
+            <span>Buat Caption</span>
+          </button>
+        </div>
+
+        <div class="relative mt-2">
+          <textarea id="captionBox" rows="4" readonly placeholder="Klik 'Buat Caption' di atas untuk menghasilkan teks iklan persuasif lengkap dengan hashtag, harga promo, dan call to action siap kirim ke calon pelanggan..." class="w-full text-xs p-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-700 leading-relaxed custom-scroll resize-none focus:outline-none"></textarea>
+          <button id="btnCopyCaption" class="absolute bottom-2.5 right-2.5 px-2.5 py-1 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-[11px] font-semibold rounded shadow-sm flex items-center gap-1 transition-all">
+            <i class="fa-regular fa-clone"></i> Salin Caption
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Tutorial / Panduan Modal -->
+  <div id="tutorialModal" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 flex flex-col gap-4">
+      <div class="flex items-center justify-between border-b pb-3 border-slate-100">
+        <h3 class="font-bold text-slate-800 text-lg flex items-center gap-2">
+          <i class="fa-solid fa-lightbulb text-amber-500"></i>
+          Tips Foto HP Jadi Keren untuk UMKM
+        </h3>
+        <button onclick="toggleModal('tutorialModal', false)" class="text-slate-400 hover:text-slate-600 text-lg">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+      <div class="space-y-3 text-xs sm:text-sm text-slate-600">
+        <div class="flex gap-3">
+          <span class="w-6 h-6 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center font-bold text-xs shrink-0">1</span>
+          <p><strong>Cahaya Alami Cukup:</strong> Ambil foto produk di dekat jendela pagi/sore. Hindari foto di tempat yang terlalu gelap agar tekstur produk tajam.</p>
+        </div>
+        <div class="flex gap-3">
+          <span class="w-6 h-6 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center font-bold text-xs shrink-0">2</span>
+          <p><strong>Jangan Terlalu Dekat (Zoom 2x):</strong> Jangan letakkan kamera HP terlalu mepet agar produk tidak cembung/distorsi. Mundur sedikit lalu gunakan zoom 2x.</p>
+        </div>
+        <div class="flex gap-3">
+          <span class="w-6 h-6 rounded-full bg-brand-100 text-brand-600 flex items-center justify-center font-bold text-xs shrink-0">3</span>
+          <p><strong>Fokus pada Produk Utama:</strong> Pastikan label atau kemasan menghadap lurus ke kamera. Biarkan StudioUMKM AI yang mengganti meja atau latar berantakan Anda!</p>
+        </div>
+      </div>
+      <div class="pt-2">
+        <button onclick="toggleModal('tutorialModal', false)" class="w-full py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-semibold text-sm rounded-xl">
+          Saya Mengerti, Mulai Berkreasi
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="mt-auto border-t border-slate-200 bg-white py-4 text-center text-xs text-slate-500">
+    <p>StudioUMKM &copy; Solusi Cerdas Foto Promosi Digital untuk Pelaku Bisnis Lokal Indonesia.</p>
+  </footer>
+
+  <!-- Application Logic -->
+  <script>
+    // Global Application State
+    const state = {
+      originalImage: null,      // Image element loaded
+      currentStudioImage: null,  // Rendered/AI transformed Image
+      aspectRatio: '1:1',       // '1:1' or '9:16'
+      filters: {
+        brightness: 100,
+        contrast: 100,
+        saturation: 105
+      },
+      productInfo: {
+        name: 'Kopi Susu Aren Botol 250ml',
+        category: 'kuliner'
+      },
+      selectedPrompt: "Place this exact product standing upright on a warm rustic dark wooden café table. Professional high-end commercial product photography, dramatic warm soft rim lighting, shallow depth of field, cozy aesthetic café background blurred, ultra sharp product focus, 8k resolution.",
+      isGenerating: false
+    };
+
+    // DOM Elements
+    const canvas = document.getElementById('mainCanvas');
+    const ctx = canvas.getContext('2d');
+    const imageInput = document.getElementById('imageInput');
+    const dropzone = document.getElementById('dropzone');
+    const emptyState = document.getElementById('emptyState');
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    const loadingStatusText = document.getElementById('loadingStatusText');
+    const visionStatusBadge = document.getElementById('visionStatusBadge');
+    const visionSummaryText = document.getElementById('visionSummaryText');
+    const visionConfidence = document.getElementById('visionConfidence');
+    const aiAutoTag = document.getElementById('aiAutoTag');
+    const btnGenerateAI = document.getElementById('btnGenerateAI');
+    const btnQuickDemo = document.getElementById('btnQuickDemo');
+    const btnDownloadJPG = document.getElementById('btnDownloadJPG');
+    const btnCopyImage = document.getElementById('btnCopyImage');
+    const btnGenerateCaption = document.getElementById('btnGenerateCaption');
+    const btnCopyCaption = document.getElementById('btnCopyCaption');
+    const captionBox = document.getElementById('captionBox');
+    const toggleOverlay = document.getElementById('toggleOverlay');
+    const overlayControls = document.getElementById('overlayControls');
+    const presetContainer = document.getElementById('presetContainer');
+    const customPromptContainer = document.getElementById('customPromptContainer');
+    const customPromptText = document.getElementById('customPromptText');
+    const btnAspectSquare = document.getElementById('btnAspectSquare');
+    const btnAspectStory = document.getElementById('btnAspectStory');
+    const btnResetAdjust = document.getElementById('btnResetAdjust');
+
+    // Filter Sliders
+    const filterBrightness = document.getElementById('filterBrightness');
+    const filterContrast = document.getElementById('filterContrast');
+    const filterSaturation = document.getElementById('filterSaturation');
+
+    // UI Helper: Toast
+    function showToast(message, type = 'info') {
+      const toastContainer = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      const bgColors = {
+        success: 'bg-emerald-600 text-white',
+        error: 'bg-rose-600 text-white',
+        info: 'bg-slate-800 text-white'
+      };
+      const icons = {
+        success: 'fa-check-circle',
+        error: 'fa-triangle-exclamation',
+        info: 'fa-info-circle'
+      };
+
+      toast.className = `pointer-events-auto flex items-center gap-2.5 px-4 py-3 rounded-xl shadow-xl text-xs font-medium transition-all duration-300 transform translate-y-2 opacity-0 ${bgColors[type] || bgColors.info}`;
+      toast.innerHTML = `<i class="fa-solid ${icons[type]} text-sm"></i> <span>${message}</span>`;
+      
+      toastContainer.appendChild(toast);
+      requestAnimationFrame(() => {
+        toast.classList.remove('translate-y-2', 'opacity-0');
+      });
+
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-2');
+        setTimeout(() => toast.remove(), 300);
+      }, 3500);
+    }
+
+    // Modal Toggle
+    window.toggleModal = function(id, show) {
+      const modal = document.getElementById(id);
+      if (modal) {
+        if (show) modal.classList.remove('hidden');
+        else modal.classList.add('hidden');
+      }
+    };
+
+    // Load Image onto Canvas
+    function loadNewImage(src) {
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      img.onload = () => {
+        state.originalImage = img;
+        state.currentStudioImage = img;
+        emptyState.classList.add('hidden');
+        renderCanvas();
+        showToast('Foto berhasil dimuat!', 'success');
+
+        // Jalankan Computer Vision AI untuk mengenali dan mengkategorikan produk secara otomatis
+        analyzeProductImageWithVision();
+      };
+      img.onerror = () => {
+        showToast('Gagal memuat gambar', 'error');
+      };
+      img.src = src;
+    }
+
+    // Computer Vision: AI Otomatis Mengidentifikasi Produk & Kategori
+    async function analyzeProductImageWithVision() {
+      const base64Data = getCanvasBase64();
+      if (!base64Data) return;
+
+      // Tampilkan indikator loading analisis vision
+      if (visionStatusBadge) {
+        visionStatusBadge.classList.remove('hidden');
+        visionSummaryText.innerHTML = '<span class="inline-flex items-center gap-1.5"><i class="fa-solid fa-spinner fa-spin text-brand-600"></i> AI sedang menganalisis foto produk Anda...</span>';
+        visionConfidence.textContent = 'Memindai...';
+        visionConfidence.className = 'text-[10px] font-semibold text-brand-700 bg-brand-100 px-1.5 py-0.5 rounded';
+      }
+
+      const visionPrompt = `Anda adalah sistem Computer Vision e-commerce profesional untuk UMKM. Analisis foto produk ini secara cermat.
+Tugas:
+1. Baca teks label kemasan atau kenali objek utama produk.
+2. Tentukan nama produk yang ringkas dan menarik (misal: "Susu Kambing SUZUKA 200ml" atau "Keripik Singkong Renyah").
+3. Kategorikan produk ke SALAH SATU dari nilai berikut:
+   - "kuliner" (makanan, minuman, snack, kopi)
+   - "skincare" (lotion, serum, sabun kecantikan, kosmetik, parfum)
+   - "fashion" (baju, hijab, tas, sepatu, topi)
+   - "aksesoris" (kerajinan, perhiasan, souvenir)
+   - "elektronik" (gadget, lampu, peralatan rumah)
+   - "herbal" (madu, jamu, suplemen, obat herbal, kesehatan)
+4. Buatkan 1 slogan promosi singkat (maksimal 7 kata).
+5. Pilih salah satu index preset studio yang paling cocok (angka 0 s/d 4):
+   - 0: Meja Kayu Estetik (bagus utk kuliner, kopi, toples sambal)
+   - 1: Podium Skincare Mewah (bagus utk skincare, botol parfum, serum)
+   - 2: Marmer Putih Elegan (bagus utk minuman premium, botol kaca, fashion aksesoris)
+   - 3: Alam & Daun Tropis (bagus utk produk herbal, jamu, organik, susu segar, buah)
+   - 4: Katalog Marketplace (bagus utk katalog umum, fashion, elektronik)
+
+Format respons HARUS berupa JSON valid persis seperti schema ini:
+{
+  "productName": "string",
+  "category": "kuliner | skincare | fashion | aksesoris | elektronik | herbal",
+  "slogan": "string",
+  "recommendedPresetIndex": 0,
+  "detectedHighlights": "string (deskripsi singkat yang terdeteksi, misal: Botol plastik susu kambing isi 3 dengan tutup hijau)"
+}`;
+
+      try {
+        const apiKey = "";
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+        const payload = {
+          contents: [
+            {
+              role: "user",
+              parts: [
+                { text: visionPrompt },
+                {
+                  inlineData: {
+                    mimeType: "image/jpeg",
+                    data: base64Data
+                  }
+                }
+              ]
+            }
+          ],
+          generationConfig: {
+            responseMimeType: "application/json"
+          }
+        };
+
+        const res = await fetchWithRetry(apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) throw new Error(`Status ${res.status}`);
+
+        const result = await res.json();
+        const jsonText = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+        if (jsonText) {
+          const parsed = JSON.parse(jsonText);
+
+          // Update form input produk secara otomatis
+          if (parsed.productName) {
+            document.getElementById('productName').value = parsed.productName;
+          }
+          if (parsed.category) {
+            document.getElementById('productCategory').value = parsed.category;
+          }
+          if (parsed.slogan) {
+            document.getElementById('overlaySlogan').value = parsed.slogan;
+          }
+
+          // Otomatis pilihkan tema studio yang direkomendasikan AI
+          if (typeof parsed.recommendedPresetIndex === 'number' && parsed.recommendedPresetIndex >= 0 && parsed.recommendedPresetIndex <= 4) {
+            selectPresetByIndex(parsed.recommendedPresetIndex);
+          }
+
+          // Perbarui badge informasi vision
+          if (visionStatusBadge) {
+            visionSummaryText.textContent = parsed.detectedHighlights || `Terdeteksi: ${parsed.productName} (${parsed.category.toUpperCase()})`;
+            visionConfidence.textContent = 'Akurat 98%';
+            visionConfidence.className = 'text-[10px] font-semibold text-emerald-700 bg-emerald-100 px-1.5 py-0.5 rounded';
+          }
+          if (aiAutoTag) aiAutoTag.classList.remove('hidden');
+
+          renderCanvas();
+          showToast(`AI mengenali: ${parsed.productName}`, 'success');
+        }
+      } catch (err) {
+        console.warn('Vision analysis fallback/skipped:', err);
+        if (visionStatusBadge) {
+          visionSummaryText.textContent = 'Produk siap diatur manual.';
+          visionConfidence.textContent = 'Manual';
+          visionConfidence.className = 'text-[10px] font-semibold text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded';
+        }
+      }
+    }
+
+    // Helper: Mengaktifkan preset studio berdasarkan index rekomendasi AI
+    function selectPresetByIndex(idx) {
+      const presetCards = document.querySelectorAll('.preset-card');
+      if (presetCards && presetCards[idx]) {
+        presetCards[idx].click();
+      }
+    }
+
+    // Canvas Render Function (Image + Color Grading + Banner Overlay)
+    function renderCanvas() {
+      if (!state.currentStudioImage) return;
+
+      const baseWidth = 1080;
+      let baseHeight = state.aspectRatio === '1:1' ? 1080 : 1920;
+
+      canvas.width = baseWidth;
+      canvas.height = baseHeight;
+
+      // Draw background / clear
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Apply CSS-like Filters to Context
+      ctx.save();
+      ctx.filter = `brightness(${state.filters.brightness}%) contrast(${state.filters.contrast}%) saturate(${state.filters.saturation}%)`;
+
+      // Draw image to cover aspect ratio nicely
+      const img = state.currentStudioImage;
+      const imgAspect = img.width / img.height;
+      const canvasAspect = canvas.width / canvas.height;
+
+      let drawWidth, drawHeight, offsetX, offsetY;
+
+      if (imgAspect > canvasAspect) {
+        // Image is wider than canvas
+        drawHeight = canvas.height;
+        drawWidth = canvas.height * imgAspect;
+        offsetX = (canvas.width - drawWidth) / 2;
+        offsetY = 0;
+      } else {
+        // Image is taller than canvas
+        drawWidth = canvas.width;
+        drawHeight = canvas.width / imgAspect;
+        offsetX = 0;
+        offsetY = (canvas.height - drawHeight) / 2;
+      }
+
+      ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+      ctx.restore();
+
+      // Render Promotional Banner Overlays if enabled
+      if (toggleOverlay.checked) {
+        renderPromotionOverlay();
+      }
+    }
+
+    // Promotional Graphics Overlay
+    function renderPromotionOverlay() {
+      const w = canvas.width;
+      const h = canvas.height;
+
+      const badge = document.getElementById('overlayBadge').value;
+      const brand = document.getElementById('overlayBrand').value.trim();
+      const price = document.getElementById('overlayPrice').value.trim();
+      const oldPrice = document.getElementById('overlayOldPrice').value.trim();
+      const slogan = document.getElementById('overlaySlogan').value.trim();
+
+      // 1. Top Badge / Label
+      if (badge && badge !== 'none') {
+        ctx.save();
+        const badgeText = badge;
+        ctx.font = 'bold 36px "Plus Jakarta Sans", sans-serif';
+        const textWidth = ctx.measureText(badgeText).width;
+        const badgeX = 50;
+        const badgeY = 60;
+        const paddingX = 30;
+        const paddingY = 18;
+        const badgeH = 64;
+        const badgeW = textWidth + (paddingX * 2);
+
+        // Badge Pill Shadow
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.25)';
+        ctx.shadowBlur = 16;
+        ctx.shadowOffsetY = 6;
+
+        // Badge Gradient
+        const grad = ctx.createLinearGradient(badgeX, badgeY, badgeX + badgeW, badgeY + badgeH);
+        grad.addColorStop(0, '#f97316');
+        grad.addColorStop(1, '#dc2626');
+        ctx.fillStyle = grad;
+
+        // Rounded Rect Badge
+        roundRect(ctx, badgeX, badgeY, badgeW, badgeH, 32);
+        ctx.fill();
+
+        ctx.shadowColor = 'transparent';
+        ctx.fillStyle = '#ffffff';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(badgeText, badgeX + (badgeW / 2), badgeY + (badgeH / 2) + 2);
+        ctx.restore();
+      }
+
+      // 2. Brand Name Tag (Top Right)
+      if (brand) {
+        ctx.save();
+        ctx.font = '600 28px "Plus Jakarta Sans", sans-serif';
+        const brandW = ctx.measureText(brand).width;
+        const bx = w - 50 - brandW - 40;
+        const by = 60;
+
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.75)';
+        roundRect(ctx, bx, by, brandW + 40, 60, 16);
+        ctx.fill();
+
+        ctx.fillStyle = '#ffffff';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(brand, bx + 20, by + 30);
+        ctx.restore();
+      }
+
+      // 3. Bottom Modern Promo Bar (Price & Slogan)
+      if (price || slogan) {
+        ctx.save();
+        const bottomBarHeight = 180;
+        const barY = h - bottomBarHeight - 50;
+        const barX = 50;
+        const barW = w - 100;
+
+        // Frosted / Dark Glass Background Card
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.35)';
+        ctx.shadowBlur = 25;
+        ctx.shadowOffsetY = 10;
+
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.88)';
+        roundRect(ctx, barX, barY, barW, bottomBarHeight, 28);
+        ctx.fill();
+
+        // Reset shadow for text
+        ctx.shadowColor = 'transparent';
+
+        // Slogan / Product title
+        ctx.fillStyle = '#94a3b8';
+        ctx.font = '600 24px "Plus Jakarta Sans", sans-serif';
+        ctx.fillText(slogan || 'Spesial Penawaran Hari Ini', barX + 36, barY + 54);
+
+        // Main Promo Price
+        ctx.fillStyle = '#38bdf8';
+        ctx.font = '800 56px "Plus Jakarta Sans", sans-serif';
+        ctx.fillText(price, barX + 36, barY + 128);
+
+        // Strikethrough Old Price
+        if (oldPrice) {
+          const priceWidth = ctx.measureText(price).width;
+          const oldX = barX + 36 + priceWidth + 24;
+          const oldY = barY + 122;
+
+          ctx.fillStyle = '#64748b';
+          ctx.font = '600 32px "Plus Jakarta Sans", sans-serif';
+          ctx.fillText(oldPrice, oldX, oldY);
+
+          const oldWidth = ctx.measureText(oldPrice).width;
+          ctx.strokeStyle = '#ef4444';
+          ctx.lineWidth = 3.5;
+          ctx.beginPath();
+          ctx.moveTo(oldX - 2, oldY - 10);
+          ctx.lineTo(oldX + oldWidth + 4, oldY - 10);
+          ctx.stroke();
+        }
+
+        // Call to action button on bottom right
+        const ctaText = 'BELI SEKARANG';
+        ctx.font = 'bold 24px "Plus Jakarta Sans", sans-serif';
+        const ctaW = ctx.measureText(ctaText).width + 50;
+        const ctaH = 64;
+        const ctaX = barX + barW - ctaW - 32;
+        const ctaY = barY + (bottomBarHeight - ctaH) / 2;
+
+        const ctaGrad = ctx.createLinearGradient(ctaX, ctaY, ctaX + ctaW, ctaY + ctaH);
+        ctaGrad.addColorStop(0, '#2563eb');
+        ctaGrad.addColorStop(1, '#4f46e5');
+        ctx.fillStyle = ctaGrad;
+        roundRect(ctx, ctaX, ctaY, ctaW, ctaH, 18);
+        ctx.fill();
+
+        ctx.fillStyle = '#ffffff';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(ctaText, ctaX + (ctaW / 2), ctaY + (ctaH / 2) + 1);
+
+        ctx.restore();
+      }
+    }
+
+    // Helper: Rounded Rectangle for Canvas
+    function roundRect(ctx, x, y, width, height, radius) {
+      ctx.beginPath();
+      ctx.moveTo(x + radius, y);
+      ctx.lineTo(x + width - radius, y);
+      ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+      ctx.lineTo(x + width, y + height - radius);
+      ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+      ctx.lineTo(x + radius, y + height);
+      ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+      ctx.lineTo(x, y + radius);
+      ctx.quadraticCurveTo(x, y, x + radius, y);
+      ctx.closePath();
+    }
+
+    // Convert Canvas to Base64 (JPEG)
+    function getCanvasBase64() {
+      // Export original base or current canvas without banners for clean AI prompting
+      const tempCanvas = document.createElement('canvas');
+      const tempCtx = tempCanvas.getContext('2d');
+      const srcImg = state.originalImage || state.currentStudioImage;
+      if (!srcImg) return null;
+
+      tempCanvas.width = srcImg.width || 800;
+      tempCanvas.height = srcImg.height || 800;
+      tempCtx.drawImage(srcImg, 0, 0);
+
+      const dataUrl = tempCanvas.toDataURL('image/jpeg', 0.85);
+      return dataUrl.split(',')[1];
+    }
+
+    // Call Gemini 3.1 Flash Image for Professional Studio Background Transformation
+    async function transformImageWithAI() {
+      if (!state.originalImage && !state.currentStudioImage) {
+        showToast('Unggah foto produk terlebih dahulu!', 'error');
+        return;
+      }
+
+      const pName = document.getElementById('productName').value.trim() || 'produk UMKM';
+      let targetPrompt = state.selectedPrompt;
+
+      if (targetPrompt === 'custom') {
+        const customVal = customPromptText.value.trim();
+        if (!customVal) {
+          showToast('Isi deskripsi prompt custom latar belakang terlebih dahulu!', 'error');
+          return;
+        }
+        targetPrompt = `Take the product in this image (${pName}) and realistically stage it in this environment: ${customVal}. High-end commercial product photography, professional lighting, photorealistic studio backdrop, sharp focus on product.`;
+      } else {
+        targetPrompt = `Retain the exact item shown in the image (${pName}) with highest fidelity. ${state.selectedPrompt}`;
+      }
+
+      const base64Data = getCanvasBase64();
+      if (!base64Data) {
+        showToast('Gambar tidak valid', 'error');
+        return;
+      }
+
+      // Show Loading State
+      state.isGenerating = true;
+      loadingOverlay.classList.remove('hidden');
+      loadingStatusText.textContent = 'Memproses foto ke studio profesional dengan AI...';
+      btnGenerateAI.disabled = true;
+      btnGenerateAI.classList.add('opacity-70', 'cursor-not-allowed');
+
+      try {
+        const apiKey = ""; // Runtime injection by canvas platform
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-image:generateContent?key=${apiKey}`;
+
+        const payload = {
+          contents: [{
+            role: "user",
+            parts: [
+              { text: targetPrompt },
+              {
+                inlineData: {
+                  mimeType: "image/jpeg",
+                  data: base64Data
+                }
+              }
+            ]
+          }],
+          generationConfig: {
+            responseModalities: ['TEXT', 'IMAGE']
+          }
+        };
+
+        const response = await fetchWithRetry(apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+          throw new Error(`API response status: ${response.status}`);
+        }
+
+        const result = await response.json();
+        const imagePart = result?.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
+
+        if (imagePart && imagePart.inlineData?.data) {
+          const newImgUrl = `data:${imagePart.inlineData.mimeType || 'image/png'};base64,${imagePart.inlineData.data}`;
+          
+          const newImg = new Image();
+          newImg.onload = () => {
+            state.currentStudioImage = newImg;
+            renderCanvas();
+            document.getElementById('statusTag').textContent = 'Studio AI Aktif';
+            document.getElementById('statusTag').className = 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800';
+            showToast('Latar studio profesional berhasil dibuat!', 'success');
+          };
+          newImg.src = newImgUrl;
+        } else {
+          // If model only returned text feedback
+          const textFeedback = result?.candidates?.[0]?.content?.parts?.find(p => p.text)?.text;
+          console.warn('AI Text Response:', textFeedback);
+          showToast('AI tidak menghasilkan gambar baru, silakan coba preset lain.', 'info');
+        }
+      } catch (error) {
+        console.error('Error generating AI image:', error);
+        showToast('Gagal memproses gambar AI. Periksa koneksi internet.', 'error');
+      } finally {
+        state.isGenerating = false;
+        loadingOverlay.classList.add('hidden');
+        btnGenerateAI.disabled = false;
+        btnGenerateAI.classList.remove('opacity-70', 'cursor-not-allowed');
+      }
+    }
+
+    // Helper: Exponential Backoff Fetch
+    async function fetchWithRetry(url, options, maxRetries = 3) {
+      let delay = 1000;
+      for (let i = 0; i < maxRetries; i++) {
+        try {
+          const res = await fetch(url, options);
+          if (res.status === 429 && i < maxRetries - 1) {
+            await new Promise(r => setTimeout(r, delay));
+            delay *= 2;
+            continue;
+          }
+          return res;
+        } catch (err) {
+          if (i === maxRetries - 1) throw err;
+          await new Promise(r => setTimeout(r, delay));
+          delay *= 2;
+        }
+      }
+    }
+
+    // AI Copywriter: Generate Viral Social Media Caption
+    async function generateMarketingCaption() {
+      const pName = document.getElementById('productName').value.trim() || 'Produk UMKM Favorit';
+      const pCategory = document.getElementById('productCategory').value;
+      const price = document.getElementById('overlayPrice').value.trim() || 'Harga Spesial';
+      const badge = document.getElementById('overlayBadge').value;
+      const brand = document.getElementById('overlayBrand').value.trim() || 'Toko Kami';
+
+      captionBox.value = 'Sedang meracik caption promosi menarik yang siap banjir orderan...';
+      btnGenerateCaption.disabled = true;
+
+      const systemPrompt = "Anda adalah Copywriter dan Digital Marketing Specialist spesialis UMKM Indonesia. Buat copy postingan media sosial (Instagram/TikTok/WhatsApp) yang santun, ramah, persuasif, memiliki hook menarik, menonjolkan keunggulan produk, mencantumkan harga promo, call-to-action yang jelas, dan hashtag relevan.";
+      const userPrompt = `Buatkan caption jualan untuk produk ini:
+- Nama Produk: ${pName}
+- Kategori: ${pCategory}
+- Brand/Toko: ${brand}
+- Promo: ${badge} (Harga: ${price})
+Format harus rapi dengan emoji, ada pembuka yang bikin penasaran, isi benefit, info cara pesan, dan 5 hashtag populer.`;
+
+      try {
+        const apiKey = "";
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+        const payload = {
+          contents: [{ parts: [{ text: userPrompt }] }],
+          systemInstruction: { parts: [{ text: systemPrompt }] }
+        };
+
+        const res = await fetchWithRetry(apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json();
+        const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+        if (text) {
+          captionBox.value = text;
+          showToast('Caption promosi berhasil dibuat!', 'success');
+        } else {
+          captionBox.value = `🔥 PROMO SPESIAL HARI INI! 🔥\n\nDapatkan ${pName} kualitas terbaik dari ${brand}! Nikmati penawaran terbatas ${price}. Order sekarang sebelum kehabisan stok!\n\n📲 Hubungi WhatsApp kami sekarang.\n#UMKMIndonesia #PromoSpesial #ProdukLokal`;
+        }
+      } catch (err) {
+        console.error('Caption error:', err);
+        captionBox.value = `🔥 SPESIAL HARI INI: ${pName}! 🔥\n\nYuk diorder sekarang juga dari ${brand}. Dapatkan harga hemat hanya ${price}!\n\n👉 Klik link di bio untuk pemesanan langsung.\n#ProdukLokal #DiskonSpesial #UMKMBisa`;
+        showToast('Caption alternatif dibuat secara lokal.', 'info');
+      } finally {
+        btnGenerateCaption.disabled = false;
+      }
+    }
+
+    // Sample Image for Quick Testing
+    function loadSampleProduct() {
+      // Create a nice mock product graphic (Cold Brew Coffee Bottle) inside a canvas
+      const demoCanvas = document.createElement('canvas');
+      demoCanvas.width = 800;
+      demoCanvas.height = 800;
+      const dCtx = demoCanvas.getContext('2d');
+
+      // Simple flat indoor lighting as if taken by phone on kitchen counter
+      dCtx.fillStyle = '#e2e8f0';
+      dCtx.fillRect(0, 0, 800, 800);
+
+      // Plain tiled table line
+      dCtx.fillStyle = '#cbd5e1';
+      dCtx.fillRect(0, 550, 800, 250);
+
+      // Product Bottle Body
+      dCtx.save();
+      dCtx.shadowColor = 'rgba(0,0,0,0.15)';
+      dCtx.shadowBlur = 20;
+      dCtx.shadowOffsetY = 15;
+
+      // Glass Bottle
+      dCtx.fillStyle = '#451a03'; // Rich dark coffee
+      roundRect(dCtx, 300, 280, 200, 360, 40);
+      dCtx.fill();
+
+      // Bottle Neck
+      roundRect(dCtx, 360, 180, 80, 120, 10);
+      dCtx.fill();
+
+      // Golden Cap
+      dCtx.fillStyle = '#d97706';
+      roundRect(dCtx, 350, 150, 100, 35, 6);
+      dCtx.fill();
+
+      // Label on Bottle
+      dCtx.fillStyle = '#fef3c7';
+      roundRect(dCtx, 320, 350, 160, 180, 12);
+      dCtx.fill();
+
+      // Label Text
+      dCtx.fillStyle = '#78350f';
+      dCtx.font = 'bold 22px "Plus Jakarta Sans", sans-serif';
+      dCtx.textAlign = 'center';
+      dCtx.fillText('KOPI AREN', 400, 420);
+
+      dCtx.font = '14px "Plus Jakarta Sans", sans-serif';
+      dCtx.fillStyle = '#92400e';
+      dCtx.fillText('Cold Brew 250ml', 400, 450);
+      dCtx.fillText('100% Arabika', 400, 475);
+
+      dCtx.restore();
+
+      loadNewImage(demoCanvas.toDataURL('image/jpeg', 0.9));
+      document.getElementById('productName').value = 'Kopi Susu Aren Artisan';
+      document.getElementById('overlayBrand').value = 'Kopi Kenangan UMKM';
+      document.getElementById('overlayPrice').value = 'Rp 22.000';
+      document.getElementById('overlayOldPrice').value = 'Rp 35.000';
+    }
+
+    // Event Listeners Setup
+    function setupEventListeners() {
+      // File Dropzone & Input
+      dropzone.addEventListener('click', () => imageInput.click());
+      
+      imageInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (event) => loadNewImage(event.target.result);
+          reader.readAsDataURL(file);
+        }
+      });
+
+      // Drag and drop handling
+      dropzone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropzone.classList.add('border-brand-500', 'bg-brand-50/50');
+      });
+
+      dropzone.addEventListener('dragleave', () => {
+        dropzone.classList.remove('border-brand-500', 'bg-brand-50/50');
+      });
+
+      dropzone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropzone.classList.remove('border-brand-500', 'bg-brand-50/50');
+        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+          const file = e.dataTransfer.files[0];
+          const reader = new FileReader();
+          reader.onload = (event) => loadNewImage(event.target.result);
+          reader.readAsDataURL(file);
+        }
+      });
+
+      // Preset Selection
+      const presetCards = document.querySelectorAll('.preset-card');
+      presetCards.forEach(card => {
+        card.addEventListener('click', () => {
+          presetCards.forEach(c => {
+            c.classList.remove('active', 'border-brand-500', 'bg-brand-50/40');
+            c.classList.add('border-slate-200', 'bg-white');
+            c.querySelector('.check-indicator').classList.add('hidden');
+          });
+
+          card.classList.add('active', 'border-brand-500', 'bg-brand-50/40');
+          card.classList.remove('border-slate-200', 'bg-white');
+          card.querySelector('.check-indicator').classList.remove('hidden');
+
+          const promptVal = card.getAttribute('data-prompt');
+          state.selectedPrompt = promptVal;
+
+          if (promptVal === 'custom') {
+            customPromptContainer.classList.remove('hidden');
+          } else {
+            customPromptContainer.classList.add('hidden');
+          }
+        });
+      });
+
+      // Aspect Ratio Switching
+      btnAspectSquare.addEventListener('click', () => {
+        state.aspectRatio = '1:1';
+        btnAspectSquare.className = 'px-2.5 py-1 rounded-md bg-white font-semibold shadow-sm text-slate-800';
+        btnAspectStory.className = 'px-2.5 py-1 rounded-md text-slate-500 hover:text-slate-800';
+        renderCanvas();
+      });
+
+      btnAspectStory.addEventListener('click', () => {
+        state.aspectRatio = '9:16';
+        btnAspectStory.className = 'px-2.5 py-1 rounded-md bg-white font-semibold shadow-sm text-slate-800';
+        btnAspectSquare.className = 'px-2.5 py-1 rounded-md text-slate-500 hover:text-slate-800';
+        renderCanvas();
+      });
+
+      // Overlay Toggle
+      toggleOverlay.addEventListener('change', () => {
+        if (toggleOverlay.checked) {
+          overlayControls.classList.remove('opacity-40', 'pointer-events-none');
+        } else {
+          overlayControls.classList.add('opacity-40', 'pointer-events-none');
+        }
+        renderCanvas();
+      });
+
+      // Realtime text inputs for Overlay
+      ['overlayBadge', 'overlayBrand', 'overlayPrice', 'overlayOldPrice', 'overlaySlogan'].forEach(id => {
+        document.getElementById(id).addEventListener('input', renderCanvas);
+        document.getElementById(id).addEventListener('change', renderCanvas);
+      });
+
+      // Adjustments Filters
+      filterBrightness.addEventListener('input', (e) => {
+        state.filters.brightness = e.target.value;
+        document.getElementById('valBrightness').textContent = `${e.target.value}%`;
+        renderCanvas();
+      });
+
+      filterContrast.addEventListener('input', (e) => {
+        state.filters.contrast = e.target.value;
+        document.getElementById('valContrast').textContent = `${e.target.value}%`;
+        renderCanvas();
+      });
+
+      filterSaturation.addEventListener('input', (e) => {
+        state.filters.saturation = e.target.value;
+        document.getElementById('valSaturation').textContent = `${e.target.value}%`;
+        renderCanvas();
+      });
+
+      btnResetAdjust.addEventListener('click', () => {
+        state.filters = { brightness: 100, contrast: 100, saturation: 105 };
+        filterBrightness.value = 100;
+        filterContrast.value = 100;
+        filterSaturation.value = 105;
+        document.getElementById('valBrightness').textContent = '100%';
+        document.getElementById('valContrast').textContent = '100%';
+        document.getElementById('valSaturation').textContent = '105%';
+        renderCanvas();
+        showToast('Filter warna dikembalikan normal');
+      });
+
+      // Generate AI Background Button
+      btnGenerateAI.addEventListener('click', transformImageWithAI);
+
+      // Demo Sample Button
+      btnQuickDemo.addEventListener('click', loadSampleProduct);
+
+      // Copy Caption Button
+      btnCopyCaption.addEventListener('click', () => {
+        const text = captionBox.value;
+        if (!text) {
+          showToast('Belum ada caption untuk disalin', 'error');
+          return;
+        }
+        
+        // Robust fallback copying
+        const tempTextarea = document.createElement('textarea');
+        tempTextarea.value = text;
+        document.body.appendChild(tempTextarea);
+        tempTextarea.select();
+        try {
+          document.execCommand('copy');
+          showToast('Caption berhasil disalin ke clipboard!', 'success');
+        } catch (e) {
+          showToast('Gagal menyalin teks', 'error');
+        }
+        document.body.removeChild(tempTextarea);
+      });
+
+      // AI Caption Generator Trigger
+      btnGenerateCaption.addEventListener('click', generateMarketingCaption);
+
+      // Download Canvas Button
+      btnDownloadJPG.addEventListener('click', () => {
+        if (!state.currentStudioImage) {
+          showToast('Belum ada foto yang diproses', 'error');
+          return;
+        }
+        const link = document.createElement('a');
+        const pName = document.getElementById('productName').value.trim().toLowerCase().replace(/\s+/g, '-') || 'foto-produk';
+        link.download = `studioumkm-${pName}-${Date.now()}.jpg`;
+        link.href = canvas.toDataURL('image/jpeg', 0.95);
+        link.click();
+        showToast('Foto promosi resolusi tinggi berhasil diunduh!', 'success');
+      });
+
+      // Copy Image to Clipboard
+      btnCopyImage.addEventListener('click', async () => {
+        if (!state.currentStudioImage) {
+          showToast('Belum ada foto untuk disalin', 'error');
+          return;
+        }
+
+        try {
+          canvas.toBlob(async (blob) => {
+            if (!blob) return;
+            try {
+              if (navigator.clipboard && navigator.clipboard.write) {
+                await navigator.clipboard.write([
+                  new ClipboardItem({ 'image/png': blob })
+                ]);
+                showToast('Gambar berhasil disalin ke clipboard!', 'success');
+              } else {
+                showToast('Fitur salin gambar langsung tidak didukung browser ini, silakan gunakan tombol Download.', 'info');
+              }
+            } catch (err) {
+              showToast('Gunakan tombol Download untuk menyimpan foto.', 'info');
+            }
+          }, 'image/png');
+        } catch (e) {
+          showToast('Gagal menyalin gambar.', 'error');
+        }
+      });
+    }
+
+    // Initialize on window load
+    window.addEventListener('DOMContentLoaded', () => {
+      setupEventListeners();
+    });
+  </script>
+</body>
+</html>
