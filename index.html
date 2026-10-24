@@ -77,7 +77,7 @@
           <i class="fa-solid fa-wand-magic-sparkles text-brand-600"></i>
           <span>Coba Foto Contoh</span>
         </button>
-        <button id="btnOpenApiKeyModal" onclick="toggleModal('apiKeyModal', true)" class="text-xs sm:text-sm px-3 py-2 font-medium rounded-lg transition-all flex items-center gap-1.5 border border-amber-300 bg-amber-50 text-amber-800 hover:bg-amber-100">
+        <button id="btnOpenApiKeyModal" onclick="toggleModal('apiKeyModal', true)" class="text-xs sm:text-sm px-3 py-2 font-medium rounded-lg transition-all flex items-center gap-1.5 border border-amber-300 bg-amber-50 text-amber-800 hover:bg-emerald-100">
           <i class="fa-solid fa-key text-amber-600"></i>
           <span id="apiKeyBtnText">Set API Key</span>
           <span id="apiKeyStatusDot" class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
@@ -227,6 +227,19 @@
         <div id="customPromptContainer" class="hidden">
           <label class="block text-xs font-semibold text-slate-600 mb-1">Deskripsi Latar Belakang Custom (Bisa Bahasa Indonesia)</label>
           <textarea id="customPromptText" rows="2" placeholder="Contoh: Letakkan produk di atas meja marmer hitam dengan lampu neon biru lembut di belakangnya..." class="w-full text-xs p-2.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 bg-slate-50 focus:bg-white"></textarea>
+        </div>
+
+        <!-- Pilihan Model AI Generator & Fallback Otomatis -->
+        <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
+          <label class="font-semibold text-slate-600 flex items-center gap-1.5">
+            <i class="fa-solid fa-microchip text-brand-600"></i>
+            Model Image AI:
+          </label>
+          <select id="selectImageModel" class="text-xs px-2.5 py-1.5 rounded-lg border border-slate-200 bg-slate-50 text-slate-700 font-medium focus:ring-1 focus:ring-brand-500 focus:outline-none">
+            <option value="auto" selected>✨ Otomatis (Coba 3.1 & Fallback 2.5)</option>
+            <option value="gemini-3.1-flash-image">Gemini 3.1 Flash Image (Terbaru)</option>
+            <option value="gemini-2.5-flash-image">Gemini 2.5 Flash Image (Kompatibel)</option>
+          </select>
         </div>
 
         <!-- Action Button: Generate AI Image -->
@@ -519,7 +532,7 @@
       },
       selectedPrompt: "Place this exact product standing upright on a warm rustic dark wooden café table. Professional high-end commercial product photography, dramatic warm soft rim lighting, shallow depth of field, cozy aesthetic café background blurred, ultra sharp product focus, 8k resolution.",
       isGenerating: false,
-      userApiKey: ''            // Kunci API Gemini pengguna
+      userApiKey: localStorage.getItem('studioumkm_gemini_api_key') || '' // Simpan di localStorage agar tidak hilang saat reload
     };
 
     // Helper untuk mengambil API Key
@@ -560,67 +573,170 @@
         if (input) input.value = '';
       }
     }
+    // Convert Canvas to Base64 (JPEG) dengan resolusi yang dioptimalkan untuk transmisi API
+    function getCanvasBase64() {
+      const tempCanvas = document.createElement('canvas');
+      const tempCtx = tempCanvas.getContext('2d');
+      const srcImg = state.originalImage || state.currentStudioImage;
+      if (!srcImg) return null;
 
-    // DOM Elements
-    const canvas = document.getElementById('mainCanvas');
-    const ctx = canvas.getContext('2d');
-    const imageInput = document.getElementById('imageInput');
-    const dropzone = document.getElementById('dropzone');
-    const emptyState = document.getElementById('emptyState');
-    const loadingOverlay = document.getElementById('loadingOverlay');
-    const loadingStatusText = document.getElementById('loadingStatusText');
-    const visionStatusBadge = document.getElementById('visionStatusBadge');
-    const visionSummaryText = document.getElementById('visionSummaryText');
-    const visionConfidence = document.getElementById('visionConfidence');
-    const aiAutoTag = document.getElementById('aiAutoTag');
-    const btnGenerateAI = document.getElementById('btnGenerateAI');
-    const btnQuickDemo = document.getElementById('btnQuickDemo');
-    const btnDownloadJPG = document.getElementById('btnDownloadJPG');
-    const btnCopyImage = document.getElementById('btnCopyImage');
-    const btnGenerateCaption = document.getElementById('btnGenerateCaption');
-    const btnCopyCaption = document.getElementById('btnCopyCaption');
-    const captionBox = document.getElementById('captionBox');
-    const toggleOverlay = document.getElementById('toggleOverlay');
-    const overlayControls = document.getElementById('overlayControls');
-    const presetContainer = document.getElementById('presetContainer');
-    const customPromptContainer = document.getElementById('customPromptContainer');
-    const customPromptText = document.getElementById('customPromptText');
-    const btnAspectSquare = document.getElementById('btnAspectSquare');
-    const btnAspectStory = document.getElementById('btnAspectStory');
-    const btnResetAdjust = document.getElementById('btnResetAdjust');
+      // Batasi dimensi maksimum 1024px agar payload cepat dan tidak melebihi batas quota transfer
+      const maxDim = 1024;
+      let w = srcImg.width || 800;
+      let h = srcImg.height || 800;
 
-    // Filter Sliders
-    const filterBrightness = document.getElementById('filterBrightness');
-    const filterContrast = document.getElementById('filterContrast');
-    const filterSaturation = document.getElementById('filterSaturation');
+      if (w > maxDim || h > maxDim) {
+        if (w > h) {
+          h = Math.round((h * maxDim) / w);
+          w = maxDim;
+        } else {
+          w = Math.round((w * maxDim) / h);
+          h = maxDim;
+        }
+      }
 
-    // UI Helper: Toast
-    function showToast(message, type = 'info') {
-      const toastContainer = document.getElementById('toastContainer');
-      const toast = document.createElement('div');
-      const bgColors = {
-        success: 'bg-emerald-600 text-white',
-        error: 'bg-rose-600 text-white',
-        info: 'bg-slate-800 text-white'
+      tempCanvas.width = w;
+      tempCanvas.height = h;
+      tempCtx.drawImage(srcImg, 0, 0, w, h);
+
+      const dataUrl = tempCanvas.toDataURL('image/jpeg', 0.82);
+      return dataUrl.split(',')[1];
+    }
+
+    // Call Gemini Image Generator dengan Fallback Otomatis
+    async function transformImageWithAI() {
+      if (!state.originalImage && !state.currentStudioImage) {
+        showToast('Unggah foto produk terlebih dahulu!', 'error');
+        return;
+      }
+
+      if (!ensureApiKeyConfigured()) {
+        return;
+      }
+
+      const pName = document.getElementById('productName').value.trim() || 'produk UMKM';
+      let targetPrompt = state.selectedPrompt;
+
+      if (targetPrompt === 'custom') {
+        const customVal = customPromptText.value.trim();
+        if (!customVal) {
+          showToast('Isi deskripsi prompt custom latar belakang terlebih dahulu!', 'error');
+          return;
+        }
+        targetPrompt = `Take the product in this image (${pName}) and realistically stage it in this environment: ${customVal}. High-end commercial product photography, professional lighting, photorealistic studio backdrop, sharp focus on product.`;
+      } else {
+        targetPrompt = `Retain the exact item shown in the image (${pName}) with highest fidelity. ${state.selectedPrompt}`;
+      }
+
+      const base64Data = getCanvasBase64();
+      if (!base64Data) {
+        showToast('Gambar tidak valid', 'error');
+        return;
+      }
+
+      // Show Loading State
+      state.isGenerating = true;
+      loadingOverlay.classList.remove('hidden');
+      loadingStatusText.textContent = 'Memproses foto ke studio profesional dengan AI...';
+      btnGenerateAI.disabled = true;
+      btnGenerateAI.classList.add('opacity-70', 'cursor-not-allowed');
+
+      const apiKey = getApiKey();
+      const modelChoice = document.getElementById('selectImageModel')?.value || 'auto';
+
+      // Urutan kandidat model (jika auto, coba gemini-3.1-flash-image lalu fallback ke gemini-2.5-flash-image)
+      let modelsToTry = [];
+      if (modelChoice === 'auto') {
+        modelsToTry = ['gemini-3.1-flash-image', 'gemini-2.5-flash-image'];
+      } else {
+        modelsToTry = [modelChoice];
+      }
+
+      const payload = {
+        contents: [{
+          role: "user",
+          parts: [
+            { text: targetPrompt },
+            {
+              inlineData: {
+                mimeType: "image/jpeg",
+                data: base64Data
+              }
+            }
+          ]
+        }],
+        generationConfig: {
+          responseModalities: ['TEXT', 'IMAGE']
+        }
       };
-      const icons = {
-        success: 'fa-check-circle',
-        error: 'fa-triangle-exclamation',
-        info: 'fa-info-circle'
-      };
 
-      toast.className = `pointer-events-auto flex items-center gap-2.5 px-4 py-3 rounded-xl shadow-xl text-xs font-medium transition-all duration-300 transform translate-y-2 opacity-0 ${bgColors[type] || bgColors.info}`;
-      toast.innerHTML = `<i class="fa-solid ${icons[type]} text-sm"></i> <span>${message}</span>`;
-      
-      toastContainer.appendChild(toast);
-      requestAnimationFrame(() => {
-        toast.classList.remove('translate-y-2', 'opacity-0');
-      });
+      let success = false;
+      let lastErrorMessage = '';
 
-      setTimeout(() => {
-        toast.classList.add('opacity-0', 'translate-y-2');
-        setTimeout(() => toast.remove(), 300);
-      }, 3500);
+      for (let i = 0; i < modelsToTry.length; i++) {
+        const currentModel = modelsToTry[i];
+        loadingStatusText.textContent = `Menghubungi AI Studio (${currentModel})...`;
+
+        try {
+          const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${currentModel}:generateContent?key=${apiKey}`;
+          const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+
+          if (!response.ok) {
+            const errData = await response.json().catch(() => ({}));
+            const errMsg = errData?.error?.message || `HTTP ${response.status}`;
+            console.warn(`Model ${currentModel} error:`, errMsg);
+            lastErrorMessage = `${currentModel}: ${errMsg}`;
+
+            // Jika masih ada model cadangan berikutnya, coba fallback
+            if (i < modelsToTry.length - 1) {
+              loadingStatusText.textContent = `Model ${currentModel} tidak tersedia, mencoba ${modelsToTry[i + 1]}...`;
+              await new Promise(r => setTimeout(r, 800));
+              continue;
+            } else {
+              throw new Error(lastErrorMessage);
+            }
+          }
+
+          const result = await response.json();
+          const imagePart = result?.candidates?.[0]?.content?.parts?.find(p => p.inlineData);
+
+          if (imagePart && imagePart.inlineData?.data) {
+            const newImgUrl = `data:${imagePart.inlineData.mimeType || 'image/png'};base64,${imagePart.inlineData.data}`;
+            
+            const newImg = new Image();
+            newImg.onload = () => {
+              state.currentStudioImage = newImg;
+              renderCanvas();
+              document.getElementById('statusTag').textContent = `Studio AI Aktif (${currentModel})`;
+              document.getElementById('statusTag').className = 'px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800';
+              showToast(`Foto studio berhasil dibuat dengan ${currentModel}!`, 'success');
+            };
+            newImg.src = newImgUrl;
+            success = true;
+            break;
+          } else {
+            const textFeedback = result?.candidates?.[0]?.content?.parts?.find(p => p.text)?.text;
+            console.warn('AI Text Response:', textFeedback);
+            if (i === modelsToTry.length - 1) {
+              showToast('AI tidak merespons dengan gambar baru, coba preset lain.', 'info');
+            }
+          }
+        } catch (error) {
+          console.error(`Percobaan model ${currentModel} gagal:`, error);
+          if (i === modelsToTry.length - 1) {
+            showToast(`Gagal: ${error.message || 'Periksa API Key atau kuota akun Google Anda.'}`, 'error');
+          }
+        }
+      }
+
+      state.isGenerating = false;
+      loadingOverlay.classList.add('hidden');
+      btnGenerateAI.disabled = false;
+      btnGenerateAI.classList.remove('opacity-70', 'cursor-not-allowed');
     }
 
     // Modal Toggle
@@ -1410,6 +1526,7 @@ Format harus rapi dengan emoji, ada pembuka yang bikin penasaran, isi benefit, i
           return;
         }
         state.userApiKey = val;
+        localStorage.setItem('studioumkm_gemini_api_key', val); // Simpan permanen di browser
         updateApiKeyUI();
         toggleModal('apiKeyModal', false);
         showToast('API Key Gemini berhasil disimpan!', 'success');
@@ -1422,6 +1539,7 @@ Format harus rapi dengan emoji, ada pembuka yang bikin penasaran, isi benefit, i
 
       btnClearApiKey.addEventListener('click', () => {
         state.userApiKey = '';
+        localStorage.removeItem('studioumkm_gemini_api_key');
         userApiKeyInput.value = '';
         updateApiKeyUI();
         showToast('API Key dihapus', 'info');
@@ -1499,6 +1617,7 @@ Format harus rapi dengan emoji, ada pembuka yang bikin penasaran, isi benefit, i
     // Initialize on window load
     window.addEventListener('DOMContentLoaded', () => {
       setupEventListeners();
+      updateApiKeyUI(); // Periksa apakah ada API Key tersimpan di localStorage
     });
   </script>
 </body>
