@@ -77,6 +77,11 @@
           <i class="fa-solid fa-wand-magic-sparkles text-brand-600"></i>
           <span>Coba Foto Contoh</span>
         </button>
+        <button id="btnOpenApiKeyModal" onclick="toggleModal('apiKeyModal', true)" class="text-xs sm:text-sm px-3 py-2 font-medium rounded-lg transition-all flex items-center gap-1.5 border border-amber-300 bg-amber-50 text-amber-800 hover:bg-amber-100">
+          <i class="fa-solid fa-key text-amber-600"></i>
+          <span id="apiKeyBtnText">Set API Key</span>
+          <span id="apiKeyStatusDot" class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+        </button>
         <a href="#tutorialModal" onclick="toggleModal('tutorialModal', true)" class="text-xs sm:text-sm px-3 py-2 font-medium text-slate-600 hover:text-slate-900 rounded-lg transition-colors">
           <i class="fa-regular fa-circle-question mr-1"></i> Bantuan
         </a>
@@ -425,6 +430,72 @@
     </div>
   </div>
 
+  <!-- Modal Konfigurasi Gemini API Key & Panduan Gratis -->
+  <div id="apiKeyModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 flex flex-col gap-4 animate-in fade-in duration-200 max-h-[92vh] overflow-y-auto custom-scroll">
+      <div class="flex items-center justify-between border-b pb-3 border-slate-100">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center">
+            <i class="fa-solid fa-key text-base"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-slate-800 text-base">Pengaturan Gemini API Key</h3>
+            <p class="text-xs text-slate-500">Dibutuhkan untuk menjalankan AI di GitHub Pages</p>
+          </div>
+        </div>
+        <button onclick="toggleModal('apiKeyModal', false)" class="text-slate-400 hover:text-slate-600 p-1">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <!-- Kotak Input API Key -->
+      <div class="space-y-2">
+        <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">Masukkan API Key Anda</label>
+        <div class="relative">
+          <input type="password" id="userApiKeyInput" placeholder="AIzaSy..." class="w-full text-xs font-mono px-3.5 py-2.5 pr-20 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 bg-slate-50 focus:bg-white transition-all">
+          <div class="absolute inset-y-0 right-1.5 flex items-center gap-1">
+            <button type="button" id="btnToggleApiKeyVisibility" class="p-1.5 text-slate-400 hover:text-slate-600 text-xs rounded" title="Lihat / Sembunyikan">
+              <i class="fa-solid fa-eye" id="eyeIcon"></i>
+            </button>
+            <button type="button" id="btnPasteApiKey" class="px-2 py-1 text-[11px] font-semibold bg-slate-100 hover:bg-slate-200 text-slate-600 rounded" title="Tempel dari Clipboard">
+              Paste
+            </button>
+          </div>
+        </div>
+        <p class="text-[11px] text-slate-400">Kunci API disimpan aman di browser Anda dan hanya dikirim langsung ke endpoint resmi Google API.</p>
+      </div>
+
+      <div class="flex gap-2">
+        <button id="btnSaveApiKey" class="flex-1 py-2.5 px-4 bg-brand-600 hover:bg-brand-700 text-white font-semibold text-xs rounded-xl shadow-md shadow-brand-600/20 transition-all flex items-center justify-center gap-1.5">
+          <i class="fa-solid fa-check"></i>
+          <span>Simpan & Gunakan</span>
+        </button>
+        <button id="btnClearApiKey" class="py-2.5 px-3 bg-slate-100 hover:bg-slate-200 text-slate-600 font-medium text-xs rounded-xl transition-all">
+          Hapus
+        </button>
+      </div>
+
+      <!-- Panduan Mendapatkan API Key Gratis Google AI Studio -->
+      <div class="mt-2 p-4 rounded-xl bg-slate-50 border border-slate-200/80 space-y-3">
+        <h4 class="text-xs font-bold text-slate-800 flex items-center gap-2">
+          <i class="fa-brands fa-google text-brand-600"></i>
+          Cara Mendapatkan API Key Gratis (100% Free):
+        </h4>
+        <ol class="text-xs text-slate-600 space-y-2 list-decimal list-inside leading-relaxed">
+          <li>Buka situs resmi: <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" class="font-semibold text-brand-600 underline hover:text-brand-700 inline-flex items-center gap-1">Google AI Studio <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i></a>.</li>
+          <li>Login menggunakan akun Google (Gmail) Anda.</li>
+          <li>Klik tombol biru <strong>"Create API key"</strong> (atau <strong>"Get API key"</strong>).</li>
+          <li>Pilih proyek default atau klik <em>"Create API key in new project"</em>.</li>
+          <li>Salin (copy) kode kunci yang berawalan <code class="bg-amber-100 text-amber-900 px-1 py-0.5 rounded text-[11px] font-mono">AIzaSy...</code> lalu tempelkan ke kolom input di atas.</li>
+        </ol>
+        <div class="p-2.5 rounded-lg bg-emerald-50 border border-emerald-200 text-[11px] text-emerald-800 flex items-start gap-2">
+          <i class="fa-solid fa-circle-check text-emerald-600 shrink-0 mt-0.5"></i>
+          <span><strong>Gratis:</strong> Google AI Studio menyediakan kuota gratis harian (*Free Tier*) yang cukup untuk kebutuhan foto produk UMKM Anda tanpa perlu kartu kredit.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Footer -->
   <footer class="mt-auto border-t border-slate-200 bg-white py-4 text-center text-xs text-slate-500">
     <p>StudioUMKM &copy; Solusi Cerdas Foto Promosi Digital untuk Pelaku Bisnis Lokal Indonesia.</p>
@@ -447,8 +518,48 @@
         category: 'kuliner'
       },
       selectedPrompt: "Place this exact product standing upright on a warm rustic dark wooden café table. Professional high-end commercial product photography, dramatic warm soft rim lighting, shallow depth of field, cozy aesthetic café background blurred, ultra sharp product focus, 8k resolution.",
-      isGenerating: false
+      isGenerating: false,
+      userApiKey: ''            // Kunci API Gemini pengguna
     };
+
+    // Helper untuk mengambil API Key
+    function getApiKey() {
+      if (state.userApiKey && state.userApiKey.trim()) {
+        return state.userApiKey.trim();
+      }
+      return "";
+    }
+
+    // Periksa apakah API Key sudah tersedia
+    function ensureApiKeyConfigured() {
+      const key = getApiKey();
+      if (!key) {
+        showToast('Masukkan Gemini API Key terlebih dahulu untuk menjalankan fitur AI!', 'error');
+        toggleModal('apiKeyModal', true);
+        return false;
+      }
+      return true;
+    }
+
+    // Update Status Tampilan Tombol API Key di Navbar
+    function updateApiKeyUI() {
+      const btn = document.getElementById('btnOpenApiKeyModal');
+      const dot = document.getElementById('apiKeyStatusDot');
+      const text = document.getElementById('apiKeyBtnText');
+      const input = document.getElementById('userApiKeyInput');
+
+      if (state.userApiKey) {
+        btn.className = 'text-xs sm:text-sm px-3 py-2 font-medium rounded-lg transition-all flex items-center gap-1.5 border border-emerald-300 bg-emerald-50 text-emerald-800 hover:bg-emerald-100';
+        dot.className = 'w-2 h-2 rounded-full bg-emerald-500';
+        text.textContent = 'API Key Aktif';
+        if (input) input.value = state.userApiKey;
+      } else {
+        btn.className = 'text-xs sm:text-sm px-3 py-2 font-medium rounded-lg transition-all flex items-center gap-1.5 border border-amber-300 bg-amber-50 text-amber-800 hover:bg-amber-100';
+        dot.className = 'w-2 h-2 rounded-full bg-amber-500 animate-pulse';
+        text.textContent = 'Set API Key';
+        if (input) input.value = '';
+      }
+    }
 
     // DOM Elements
     const canvas = document.getElementById('mainCanvas');
@@ -546,6 +657,18 @@
       const base64Data = getCanvasBase64();
       if (!base64Data) return;
 
+      const apiKey = getApiKey();
+      if (!apiKey) {
+        // Jika belum ada API key, beri petunjuk ramah tanpa error keras
+        if (visionStatusBadge) {
+          visionStatusBadge.classList.remove('hidden');
+          visionSummaryText.innerHTML = 'Klik <span class="font-bold underline cursor-pointer text-brand-700" onclick="toggleModal(\'apiKeyModal\', true)">Set API Key</span> di atas untuk mengaktifkan AI Vision otomatis.';
+          visionConfidence.textContent = 'Menunggu Key';
+          visionConfidence.className = 'text-[10px] font-semibold text-amber-700 bg-amber-100 px-1.5 py-0.5 rounded';
+        }
+        return;
+      }
+
       // Tampilkan indikator loading analisis vision
       if (visionStatusBadge) {
         visionStatusBadge.classList.remove('hidden');
@@ -583,7 +706,6 @@ Format respons HARUS berupa JSON valid persis seperti schema ini:
 }`;
 
       try {
-        const apiKey = "";
         const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
 
         const payload = {
@@ -888,6 +1010,10 @@ Format respons HARUS berupa JSON valid persis seperti schema ini:
         return;
       }
 
+      if (!ensureApiKeyConfigured()) {
+        return;
+      }
+
       const pName = document.getElementById('productName').value.trim() || 'produk UMKM';
       let targetPrompt = state.selectedPrompt;
 
@@ -916,7 +1042,7 @@ Format respons HARUS berupa JSON valid persis seperti schema ini:
       btnGenerateAI.classList.add('opacity-70', 'cursor-not-allowed');
 
       try {
-        const apiKey = ""; // Runtime injection by canvas platform
+        const apiKey = getApiKey();
         const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-image:generateContent?key=${apiKey}`;
 
         const payload = {
@@ -970,7 +1096,7 @@ Format respons HARUS berupa JSON valid persis seperti schema ini:
         }
       } catch (error) {
         console.error('Error generating AI image:', error);
-        showToast('Gagal memproses gambar AI. Periksa koneksi internet.', 'error');
+        showToast('Gagal memproses gambar AI. Periksa kembali API Key dan koneksi internet Anda.', 'error');
       } finally {
         state.isGenerating = false;
         loadingOverlay.classList.add('hidden');
@@ -1001,6 +1127,10 @@ Format respons HARUS berupa JSON valid persis seperti schema ini:
 
     // AI Copywriter: Generate Viral Social Media Caption
     async function generateMarketingCaption() {
+      if (!ensureApiKeyConfigured()) {
+        return;
+      }
+
       const pName = document.getElementById('productName').value.trim() || 'Produk UMKM Favorit';
       const pCategory = document.getElementById('productCategory').value;
       const price = document.getElementById('overlayPrice').value.trim() || 'Harga Spesial';
@@ -1019,7 +1149,7 @@ Format respons HARUS berupa JSON valid persis seperti schema ini:
 Format harus rapi dengan emoji, ada pembuka yang bikin penasaran, isi benefit, info cara pesan, dan 5 hashtag populer.`;
 
       try {
-        const apiKey = "";
+        const apiKey = getApiKey();
         const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
 
         const payload = {
@@ -1264,6 +1394,64 @@ Format harus rapi dengan emoji, ada pembuka yang bikin penasaran, isi benefit, i
 
       // AI Caption Generator Trigger
       btnGenerateCaption.addEventListener('click', generateMarketingCaption);
+
+      // Event Listener Pengaturan API Key
+      const userApiKeyInput = document.getElementById('userApiKeyInput');
+      const btnSaveApiKey = document.getElementById('btnSaveApiKey');
+      const btnClearApiKey = document.getElementById('btnClearApiKey');
+      const btnToggleApiKeyVisibility = document.getElementById('btnToggleApiKeyVisibility');
+      const eyeIcon = document.getElementById('eyeIcon');
+      const btnPasteApiKey = document.getElementById('btnPasteApiKey');
+
+      btnSaveApiKey.addEventListener('click', () => {
+        const val = userApiKeyInput.value.trim();
+        if (!val) {
+          showToast('Kunci API tidak boleh kosong', 'error');
+          return;
+        }
+        state.userApiKey = val;
+        updateApiKeyUI();
+        toggleModal('apiKeyModal', false);
+        showToast('API Key Gemini berhasil disimpan!', 'success');
+
+        // Jika foto sudah ada tapi sebelumnya belum sempat dianalisis vision, jalankan sekarang
+        if (state.originalImage || state.currentStudioImage) {
+          analyzeProductImageWithVision();
+        }
+      });
+
+      btnClearApiKey.addEventListener('click', () => {
+        state.userApiKey = '';
+        userApiKeyInput.value = '';
+        updateApiKeyUI();
+        showToast('API Key dihapus', 'info');
+      });
+
+      btnToggleApiKeyVisibility.addEventListener('click', () => {
+        if (userApiKeyInput.type === 'password') {
+          userApiKeyInput.type = 'text';
+          eyeIcon.classList.replace('fa-eye', 'fa-eye-slash');
+        } else {
+          userApiKeyInput.type = 'password';
+          eyeIcon.classList.replace('fa-eye-slash', 'fa-eye');
+        }
+      });
+
+      btnPasteApiKey.addEventListener('click', async () => {
+        try {
+          if (navigator.clipboard && navigator.clipboard.readText) {
+            const clipText = await navigator.clipboard.readText();
+            if (clipText) {
+              userApiKeyInput.value = clipText.trim();
+              showToast('Kunci API berhasil ditempel dari clipboard', 'info');
+            }
+          } else {
+            showToast('Gunakan shortcut Ctrl+V atau Command+V', 'info');
+          }
+        } catch (e) {
+          showToast('Izin clipboard ditolak. Silakan tempel secara manual.', 'info');
+        }
+      });
 
       // Download Canvas Button
       btnDownloadJPG.addEventListener('click', () => {
